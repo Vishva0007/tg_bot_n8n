@@ -102,7 +102,7 @@ async def summarize_message(update: Update, context: CallbackContext):
         user_usage[user_id] = usage + 1
 
     try:
-        model = genai.GenerativeModel("gemini-pro")
+        model = genai.GenerativeModel("gemini-1.5-pro")
         response = model.generate_content(f"Summarize this: {text}")
         await update.message.reply_text("📝 Summary:\n" + response.text)
     except Exception as e:
