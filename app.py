@@ -87,7 +87,7 @@ async def button_cb(update: Update, context: CallbackContext):
     query = update.callback_query
     await query.answer()
     if query.data == "coffee":
-        await query.edit_message_text("☕ Buy me a coffee at: <your payment link here>")
+        await query.edit_message_text("☕ Buy me a coffee at: https://paypal.me/SHRI0709")
 
 async def summarize_message(update: Update, context: CallbackContext):
     user_id = update.effective_user.id
