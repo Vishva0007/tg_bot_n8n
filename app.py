@@ -1,37 +1,32 @@
 import os
-import openai
+import google.generativeai as genai
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
-# Load keys
-TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+# Load API key
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+genai.configure(api_key=GEMINI_API_KEY)
 
-openai.api_key = OPENAI_API_KEY
+# Create model
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("👋 Send me any text and I’ll summarize it for you!")
+    await update.message.reply_text("👋 Send me any text and I'll summarize it for you!")
 
 async def summarize(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_text = update.message.text
-    
-    try:
-        response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant that summarizes text."},
-                {"role": "user", "content": f"Summarize this:\n\n{user_text}"}
-            ]
-        )
-        summary = response.choices[0].message.content
-        await update.message.reply_text("📌 Summary:\n" + summary)
-    except Exception as e:
-        await update.message.reply_text("⚠️ Error: " + str(e))
+    prompt = f"Summarize this text in 3-4 bullet points:\n\n{user_text}"
+    response = model.generate_content(prompt)
+    await update.message.reply_text(response.text)
 
 def main():
-    app = Application.builder().token(TELEGRAM_TOKEN).build()
+    telegram_token = os.getenv("TELEGRAM_TOKEN")
+    app = Application.builder().token(telegram_token).build()
+
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, summarize))
+
+    print("🚀 Bot is running...")
     app.run_polling()
 
 if __name__ == "__main__":
