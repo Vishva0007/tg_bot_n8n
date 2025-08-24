@@ -111,7 +111,7 @@ async def summarize_message(update: Update, context: CallbackContext):
 # ======================
 # Main
 # ======================
-async def main():
+def main():
     app = Application.builder().token(TELEGRAM_TOKEN).build()
 
     # Register Handlers
@@ -130,13 +130,12 @@ async def main():
 
     print(f"🚀 Starting bot in webhook mode at {webhook_url}")
 
-    await app.bot.set_webhook(url=webhook_url)
-    await app.run_webhook(
+    app.run_webhook(
         listen="0.0.0.0",
         port=port,
         url_path=TELEGRAM_TOKEN,
+        webhook_url=webhook_url,
     )
 
 if __name__ == "__main__":
-    import asyncio
-    asyncio.run(main())
+    main()
